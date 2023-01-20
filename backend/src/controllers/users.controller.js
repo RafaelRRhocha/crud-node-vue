@@ -3,13 +3,8 @@ const { User } = require('../database/models');
 const createUser = async (req, res) => {
   try {
     const body = req.body;
-    const existingUser = await User.findOne({ where: { email: body.email }});
-    if (existingUser) {
-      return res.status(409).send({ error: 'Email já cadastrado!' });
-    } else {
-      const user = await User.create(body);
-      return res.status(200).json(user);
-    }
+    const user = await User.create(body);
+    return res.status(200).json(user);
   } catch (error) {
     res.status(500).send({ message: 'Erro ao cadastrar usuário', error });
   }
@@ -38,13 +33,8 @@ const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = req.body;
-    const existingUser = await User.findOne({ where: { email: updatedData.email }});
-    if (existingUser) {
-      return res.status(409).send({ error: 'Email já cadastrado!' });
-    } else {
-      await User.update(updatedData, { where: { id } });
-      res.status(200).send({ message: 'Usuário atualizado com sucesso' });
-    }
+    await User.update(updatedData, { where: { id } });
+    res.status(200).send({ message: 'Usuário atualizado com sucesso' });
   } catch (error) {
     res.status(500).send({ message: 'Erro ao atualizar usuário', error });
   }
