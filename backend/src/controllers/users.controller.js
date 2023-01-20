@@ -1,37 +1,63 @@
 const { User } = require('../database/models');
 
 const createUser = async (req, res) => {
-  const { body } = req;
-  const user = await User.create(body);
-  return res.status(200).json(user);
+  try {
+    const body = req.body;
+    const existingUser = await User.findOne({ where: { email: body.email }});
+    if (existingUser) {
+      return res.status(409).send({ error: 'Email já cadastrado!' });
+    } else {
+      const user = await User.create(body);
+      return res.status(200).json(user);
+    }
+  } catch (error) {
+    res.status(500).send({ message: 'Erro ao cadastrar usuário', error });
+  }
 };
 
-const getAllUsers = async (req, res) => {
-  const users = await User.findAll();
-  if (!users) res.status(404).json({ message: 'users not found' });
-  return res.status(200).json(users);
+const getAllUsers = async (_req, res) => {
+  try {
+    const users = await User.findAll();
+    return res.status(200).json(users);
+  } catch (error) {
+    res.status(500).send({ message: 'Erro ao procurar todos os usuários', error });
+  }
 };
 
 const getUsersById = async (req, res) => {
-  const { id } = req.params;
-  const user = await User.findOne({ where: { id } });
-  if (!user) res.status(404).json({ message: 'user not found' });
-  return res.status(200).json(user);
+  try {
+    const { id } = req.params;
+    const user = await User.findOne({ where: { id } });
+    return res.status(200).json(user);
+  } catch (error) {
+    res.status(500).send({ message: 'Erro ao procurar usuário pelo id', error });
+  }
 };
 
 const updateUser = async (req, res) => {
-  const { id } = req.params;
-  const { name, email } = req.body;
-  await User.update({ name, email }, { where: { id } });
-  const user = await User.findOne({ where: { id } });
-  if (!user) res.status(404).json({ message: 'user not found' });
-  return user;
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+    const existingUser = await User.findOne({ where: { email: updatedData.email }});
+    if (existingUser) {
+      return res.status(409).send({ error: 'Email já cadastrado!' });
+    } else {
+      await User.update(updatedData, { where: { id } });
+      res.status(200).send({ message: 'Usuário atualizado com sucesso' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: 'Erro ao atualizar usuário', error });
+  }
 };
 
-const deleteUser = async (req, _res) => {
-  const { id } = req.params;
-  const user = await User.findOne({ where: { id } });
-  await User.destroy(user);
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await User.destroy({ where: { id } });
+    res.status(200).send({ message: 'Usuário excluído com sucesso' });
+  } catch (error) {
+    res.status(500).send({ message: 'Erro ao excluir usuário', error });
+  }
 };
 
 module.exports = {

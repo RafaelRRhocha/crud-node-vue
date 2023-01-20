@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all",
-    "start": "nodemon node src/server.js",
-    "migrate": " npx sequelize db:migrate",
+    "start": "nodemon node src/server.js npm run migrate",
+    "migrate": "npx sequelize db:migrate",
     "lint": "eslint --no-inline-config --no-error-on-unmatched-pattern -c .eslintrc.json ."
   },
   "keywords": [],

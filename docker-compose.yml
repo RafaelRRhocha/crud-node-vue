@@ -23,6 +23,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_PASSWORD=password
+      - MYSQL_HOST=db
+      - MYSQL_USER=root
+      - MYSQL_DATABASE=UsersDb
     healthcheck:
       test: ["CMD", "lsof", "-t", "-i:3001"]
       timeout: 10s
